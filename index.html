@@ -1,0 +1,1178 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>無線通訊原理 - 多單元隨機練習與暫存測驗</title>
+    <!-- 引入 Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-50 text-slate-800 min-h-screen py-8 px-4">
+
+    <div class="max-w-3xl mx-auto">
+        <!-- 標題區 -->
+        <header class="text-center mb-8">
+            <h1 class="text-3xl font-bold text-indigo-600 mb-2">無線通訊原理 - 綜合練習系統</h1>
+            <p class="text-slate-600">支援單元選擇、混合練習、隨機排序與進度暫存功能（含單元一、二、三）。</p>
+        </header>
+
+        <!-- 開始畫面 / 單元選擇 -->
+        <div id="start-screen" class="bg-white rounded-2xl shadow-sm border border-slate-200 p-8 space-y-6">
+            <div class="text-center">
+                <h2 class="text-xl font-bold text-slate-700 mb-2">請選擇您要練習的單元</h2>
+                <p class="text-slate-500 text-sm">可單選或複選進行混合測驗</p>
+            </div>
+
+            <!-- 單元勾選清單 -->
+            <div class="space-y-3 max-w-lg mx-auto">
+                <label class="flex items-center gap-3 p-4 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer transition">
+                    <input type="checkbox" name="unit-select" value="unit1" checked class="w-5 h-5 text-indigo-600 rounded focus:ring-indigo-500">
+                    <div>
+                        <span class="font-bold text-slate-800 block">單元一：無線通訊基礎與頻譜、天線特性</span>
+                        <span class="text-xs text-slate-500">共 35 題（LoRaWAN、頻段、頻寬、天線、根本挑戰等）</span>
+                    </div>
+                </label>
+                <label class="flex items-center gap-3 p-4 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer transition">
+                    <input type="checkbox" name="unit-select" value="unit2" checked class="w-5 h-5 text-indigo-600 rounded focus:ring-indigo-500">
+                    <div>
+                        <span class="font-bold text-slate-800 block">單元二：通道特性、dB 運算與訊號衰減</span>
+                        <span class="text-xs text-slate-500">共 35 題（穿透損失、反射/繞散/散射、RSSI、dBm、SNR 等）</span>
+                    </div>
+                </label>
+                <label class="flex items-center gap-3 p-4 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer transition">
+                    <input type="checkbox" name="unit-select" value="unit3" checked class="w-5 h-5 text-indigo-600 rounded focus:ring-indigo-500">
+                    <div>
+                        <span class="font-bold text-slate-800 block">單元三：數位調變、編碼、OFDM、QAM 與 OFDMA</span>
+                        <span class="text-xs text-slate-500">共 35 題（編碼率、MCS、FSK/PSK/QAM、OFDM/OFDMA 等）</span>
+                    </div>
+                </label>
+            </div>
+
+            <!-- 操作按鈕 -->
+            <div class="flex flex-col sm:flex-row justify-center gap-4 pt-4">
+                <button onclick="startQuiz(false)" class="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold px-8 py-3 rounded-xl shadow-lg transition duration-200 cursor-pointer">
+                    開始新測驗
+                </button>
+                <button id="resume-btn" onclick="resumeQuiz()" class="hidden bg-emerald-600 hover:bg-emerald-700 text-white font-semibold px-8 py-3 rounded-xl shadow-lg transition duration-200 cursor-pointer">
+                    繼續上次未完成測驗
+                </button>
+            </div>
+        </div>
+
+        <!-- 測驗作答畫面 -->
+        <div id="quiz-screen" class="hidden space-y-6">
+            <div class="flex justify-between items-center bg-white px-6 py-4 rounded-xl shadow-sm border border-slate-200 sticky top-4 z-10">
+                <div class="flex items-center gap-4">
+                    <button onclick="pauseQuiz()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold px-3 py-2 rounded-lg transition cursor-pointer">
+                        暫存進度並返回
+                    </button>
+                    <span class="font-semibold text-slate-700">作答進度</span>
+                </div>
+                <span id="progress-indicator" class="text-indigo-600 font-bold">1 / 35</span>
+            </div>
+
+            <div id="questions-container" class="space-y-6">
+                <!-- 動態插入題目 -->
+            </div>
+
+            <div class="text-center pt-4 pb-12">
+                <button onclick="submitQuiz()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-10 py-4 rounded-xl shadow-lg transition duration-200 text-lg cursor-pointer">
+                    交卷看成績
+                </button>
+            </div>
+        </div>
+
+        <!-- 結果結算畫面 -->
+        <div id="result-screen" class="hidden bg-white rounded-2xl shadow-sm border border-slate-200 p-8 text-center space-y-6">
+            <h2 class="text-2xl font-bold text-slate-800">測驗結果</h2>
+            <div class="flex justify-center items-center gap-8 my-6">
+                <div class="bg-indigo-50 p-6 rounded-2xl border border-indigo-100 min-w-[140px]">
+                    <p class="text-sm text-slate-500 mb-1">答對題數</p>
+                    <p id="score-text" class="text-4xl font-black text-indigo-600">0 / 35</p>
+                </div>
+                <div class="bg-emerald-50 p-6 rounded-2xl border border-emerald-100 min-w-[140px]">
+                    <p class="text-sm text-slate-500 mb-1">正確百分比</p>
+                    <p id="percentage-text" class="text-4xl font-black text-emerald-600">0%</p>
+                </div>
+            </div>
+            <div class="flex justify-center gap-4 flex-wrap">
+                <button onclick="resetToStart()" class="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold px-6 py-3 rounded-xl transition duration-200 cursor-pointer">
+                    返回單元選擇
+                </button>
+                <button onclick="reviewAnswers()" class="bg-slate-200 hover:bg-slate-300 text-slate-700 font-semibold px-6 py-3 rounded-xl transition duration-200 cursor-pointer">
+                    檢視詳細解析
+                </button>
+            </div>
+        </div>
+
+        <!-- 詳檢畫面 -->
+        <div id="review-screen" class="hidden space-y-6 mt-8">
+            <h3 class="text-xl font-bold text-slate-800 px-2">詳細解答與對錯檢視</h3>
+            <div id="review-container" class="space-y-6">
+                <!-- 動態插入解析 -->
+            </div>
+            <div class="text-center pb-12">
+                <button onclick="resetToStart()" class="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold px-8 py-3 rounded-xl shadow-lg transition duration-200 cursor-pointer">
+                    返回首頁
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const unitsData = {
+            unit1: [
+                {
+                    q: "LoRaWAN 在台灣所使用的頻段約位於下列何者？",
+                    options: ["5 GHz", "6 GHz", "923 MHz", "2.4 GHz"],
+                    answer: 2,
+                    explanation: "台灣的 LoRaWAN 使用 sub-GHz 的免授權頻段，約在 923 MHz。低頻的繞射與穿透能力佳，適合長距離、低速率的感測應用。"
+                },
+                {
+                    q: "在無線通訊系統方塊圖中，為何說「無線通道」是各項問題的來源？",
+                    options: [
+                        "通道會將資料重新編碼，導致原始位元的順序被打亂",
+                        "通道的頻寬由接收端決定，發射端無法事先得知寬度",
+                        "通道必須負責封包的加密與解密，處理延遲難以控制",
+                        "訊號在通道中會衰減、產生多路徑，並混入雜訊與干擾"
+                    ],
+                    answer: 3,
+                    explanation: "發射器與接收器的行為是可設計、可控制的，通道則不可控：訊號衰減、多路徑同時抵達、混入雜訊與其他裝置的干擾，都發生在這一段。"
+                },
+                {
+                    q: "WMAN（無線都會網路）的代表技術為下列何者？",
+                    options: ["Zigbee（IEEE 802.15.4）", "WiMAX（IEEE 802.16）", "乙太網路（IEEE 802.3）", "Wi-Fi（IEEE 802.11）"],
+                    answer: 1,
+                    explanation: "WMAN 的代表技術為 IEEE 802.16（WiMAX），設計目的是以無線方式提供都會區的寬頻接取。"
+                },
+                {
+                    q: "某電磁波的波長為 60 公分，其頻率最接近下列何者？（c = 3 × 10⁸ m/s）",
+                    options: ["5 GHz", "5 MHz", "50 MHz", "500 MHz"],
+                    answer: 3,
+                    explanation: "先將 60 公分換算為 0.6 公尺，f = c ÷ λ = (3 × 10⁸) ÷ 0.6 = 5 × 10⁸ Hz = 500 MHz。"
+                },
+                {
+                    q: "家用微波爐的工作頻率位於下列哪一個頻段，因而可能干擾無線網路？",
+                    options: ["2.4 GHz", "5 GHz", "6 GHz", "900 MHz"],
+                    answer: 0,
+                    explanation: "微波爐工作於 2.4 GHz，此頻率容易被水分子吸收因而能加熱食物，但也與 Wi-Fi、Bluetooth、Zigbee 重疊。"
+                },
+                {
+                    q: "5 GHz 的 Wi-Fi 通常比 2.4 GHz 快，最正確的原因為下列何者？",
+                    options: [
+                        "5 GHz 每傳送一個位元所需的振盪次數比較少",
+                        "5 GHz 的可用頻譜總量較大，能夠切出較寬的通道",
+                        "5 GHz 的電磁波前進速度較快，傳送所需時間較短",
+                        "5 GHz 屬於授權頻段，可以有效排除其他裝置的干擾"
+                    ],
+                    answer: 1,
+                    explanation: "因果順序為：頻率高 → 可用頻譜總量大 → 通道可切得寬 → 速率高。"
+                },
+                {
+                    q: "某使用者的座位距離無線基地台很近，且希望取得最高的傳輸速率。應優先選擇哪一個頻段，理由為何？",
+                    options: [
+                        "2.4 GHz，因為該頻段的載波頻率較低而較為穩定",
+                        "5 GHz，因為該頻段的載波頻率較高使資料跑得較快",
+                        "2.4 GHz，因為該頻段的訊號穿透牆壁的能力較強",
+                        "5 GHz，因為該頻段可以劃分出較寬的通道"
+                    ],
+                    answer: 3,
+                    explanation: "距離近時 5 GHz 的衰減不成問題，而其可用頻譜總量大、能切出較寬的通道，依 R = B × η 速率因而較高。"
+                },
+                {
+                    q: "某無線系統的頻譜效率為 5 bit/s/Hz，使用 40 MHz 的頻寬。其理論資料速率最接近下列何者？",
+                    options: ["8 Mbps", "200 Mbps", "45 Mbps", "20 Mbps"],
+                    answer: 1,
+                    explanation: "R = B × η = 40 × 10⁶ × 5 = 200 × 10⁶ = 200 Mbps。"
+                },
+                {
+                    q: "單極天線（monopole antenna）的長度約為工作波長的幾分之一？",
+                    options: ["八分之一", "二分之一", "十分之一", "四分之一"],
+                    answer: 3,
+                    explanation: "單極天線只有一根導體，約 λ/4；其下方的接地面像一面鏡子，把電流鏡像補足另一半。"
+                },
+                {
+                    q: "無線通訊中所稱的「頻寬（bandwidth）」，指的是下列何者？",
+                    options: ["訊號每秒能傳送的位元總數", "訊號在空間中傳播的最大距離", "訊號所佔用的頻率範圍寬度", "訊號在頻譜上所處的中心位置"],
+                    answer: 2,
+                    explanation: "頻寬是訊號佔用的頻率範圍寬度，例如 20 MHz。"
+                },
+                {
+                    q: "「2.4 GHz 的頻寬是 2.4 GHz」這句話錯在何處？",
+                    options: [
+                        "把載波頻率的位置當成了訊號佔用的寬度",
+                        "把整個 ISM 頻段的寬度當成了單一通道的寬度",
+                        "把訊號的發射功率當成了訊號佔用的寬度",
+                        "把載波頻率的單位由 GHz 誤寫成了 MHz"
+                    ],
+                    answer: 0,
+                    explanation: "2.4 GHz 描述的是訊號在頻譜上的位置（載波頻率），而 Wi-Fi 頻寬通常僅 20 或 40 MHz。"
+                },
+                {
+                    q: "Wi-Fi 6E 與 Wi-Fi 7 新增使用的頻段為下列何者？",
+                    options: ["900 MHz", "60 GHz", "2.4 GHz", "6 GHz"],
+                    answer: 3,
+                    explanation: "Wi-Fi 6E 的 E 代表 Extended，指延伸使用 6 GHz 頻段，Wi-Fi 7 亦可使用。"
+                },
+                {
+                    q: "Wi-Fi 所依循的 IEEE 標準編號為下列何者？",
+                    options: ["IEEE 802.11", "IEEE 802.15.4", "IEEE 802.3", "IEEE 802.16"],
+                    answer: 0,
+                    explanation: "IEEE 802.11 為 Wi-Fi 標準。"
+                },
+                {
+                    q: "頻譜效率（spectral efficiency, η）的單位為下列何者？",
+                    options: ["bit/s/Hz", "Hz/s", "bit/s", "Hz/bit"],
+                    answer: 0,
+                    explanation: "頻譜效率代表每一赫茲的頻寬每秒能承載多少位元，單位為 bit/s/Hz。"
+                },
+                {
+                    q: "下列何者不是無線網路相對於有線網路的四個根本挑戰之一？",
+                    options: [
+                        "範圍內的任何裝置都可能竊聽",
+                        "訊號強度隨距離快速衰減",
+                        "封包必須使用 IP 位址進行定址",
+                        "傳輸媒介為所有裝置共用"
+                    ],
+                    answer: 2,
+                    explanation: "四個根本挑戰為：媒介共用、訊號衰減、易遭竊聽、使用者移動。IP 定址是有線與無線網路共通的機制。"
+                },
+                {
+                    q: "偶極天線（dipole antenna）的總長度約為工作波長的幾分之一？",
+                    options: ["四分之一", "八分之一", "與波長等長", "二分之一"],
+                    answer: 3,
+                    explanation: "偶極天線由兩根等長導體構成，總長約 λ/2。"
+                },
+                {
+                    q: "為何無線網路必須具備協調發送時機的機制，而有線網路對此的需求相對較低？",
+                    options: [
+                        "無線網路共用相同的 IP 位址，需要協調以避免發生位址衝突",
+                        "無線裝置的發射功率受法規限制，必須輪流發送以維持強度",
+                        "無線網路的傳輸速率較低，需要排隊以避免緩衝區發生溢位",
+                        "空氣是所有裝置共用的媒介，同時發送會使訊號互相碰撞"
+                    ],
+                    answer: 3,
+                    explanation: "空氣為共用媒介，範圍內裝置同時發送即互相碰撞，因此必須協調發送時機。"
+                },
+                {
+                    q: "ISM 頻段名稱中的 I、S、M 分別代表下列何者？",
+                    options: ["整合、訊號、調變", "室內、標準、多工", "資訊、安全、行動", "工業、科學、醫療"],
+                    answer: 3,
+                    explanation: "ISM 為 Industrial、Scientific、Medical 的縮寫。"
+                },
+                {
+                    q: "為何無線網路自設計之初便必須內建加密機制，而早期的有線網路可以不加密？",
+                    options: [
+                        "電磁波向四周廣播，範圍內任何裝置都能接收且不留痕跡",
+                        "無線網路使用免授權頻段，法規要求必須加密後才能傳送",
+                        "無線網路的傳輸速率較低，訊號容易被中途攔截並重組",
+                        "無線裝置沒有實體連接埠，無法以防火牆過濾進出的封包"
+                    ],
+                    answer: 0,
+                    explanation: "電磁波向四周廣播，攻擊者只需位於涵蓋範圍內並具備一張無線網卡即可接收所有封包。"
+                },
+                {
+                    q: "為何傳統 FM 收音機需要很長的天線，而行動電話的天線卻可以完全藏在機殼內？",
+                    options: [
+                        "手機的基地台密度較高，因此天線可以做得比較短",
+                        "手機採用數位傳輸，可用軟體補償較短天線的損失",
+                        "FM 的發射功率較大，需要較長的天線才能承受能量",
+                        "天線必須與波長共振才有效率，FM 頻率低、波長長"
+                    ],
+                    answer: 3,
+                    explanation: "導體長度對上波長，電流才能形成完整的半波而共振，FM 約 100 MHz、波長 3 公尺，λ/4 達 75 公分。"
+                },
+                {
+                    q: "在無線通訊系統方塊圖中，發射器（transmitter）負責的兩項工作為下列何者？",
+                    options: ["解調與解碼", "定址與繞送", "編碼與調變", "加密與壓縮"],
+                    answer: 2,
+                    explanation: "發射器負責編碼與調變。接收器則執行反向的解調與解碼。"
+                },
+                {
+                    q: "2.4 GHz ISM 頻段（2400～2483.5 MHz）的總頻寬約為多少？",
+                    options: ["240 MHz", "24 MHz", "2.4 GHz", "83.5 MHz"],
+                    answer: 3,
+                    explanation: "2483.5 − 2400 = 83.5 MHz。"
+                },
+                {
+                    q: "某 Wi-Fi 系統工作於 2.4 GHz，其波長最接近下列何者？（c = 3 × 10⁸ m/s）",
+                    options: ["6 公分", "1.25 公分", "125 公分", "12.5 公分"],
+                    answer: 3,
+                    explanation: "λ = c ÷ f = (3 × 10⁸) ÷ (2.4 × 10⁹) = 0.125 公尺 = 12.5 公分。"
+                },
+                {
+                    q: "WPAN（無線個人網路）的典型涵蓋範圍約為多少？",
+                    options: ["100 公尺", "100 公里", "10 公尺", "10 公里"],
+                    answer: 2,
+                    explanation: "WPAN 供個人周邊裝置使用，典型範圍約 10 公尺，代表技術為 Bluetooth、BLE、Zigbee。"
+                },
+                {
+                    q: "下列四項技術中，何者使用授權頻段（licensed band）？",
+                    options: ["LoRaWAN", "NB-IoT", "Zigbee", "Wi-Fi"],
+                    answer: 1,
+                    explanation: "NB-IoT 運作於電信業者的授權頻段，由既有行動通訊基地台提供服務。"
+                },
+                {
+                    q: "為何電信業者提供的行動網路，通常比公共 Wi-Fi 更能保證服務品質？",
+                    options: [
+                        "行動通訊使用的載波頻率較高，訊號本身比較不易衰減",
+                        "基地台的發射功率不受法規限制，可以隨時提高其輸出",
+                        "業者取得授權頻段的獨家使用權，可規劃容量並控制干擾",
+                        "行動裝置的天線設計較佳，接收靈敏度高於一般無線網卡"
+                    ],
+                    answer: 2,
+                    explanation: "授權頻段僅由得標業者使用，可有效控制干擾並規劃容量。"
+                },
+                {
+                    q: "依據 R = B × η，一個無線系統的資料速率主要取決於下列何者？",
+                    options: [
+                        "載波頻率與頻寬，兩者的數值越高速率就越高",
+                        "頻寬與頻譜效率，與載波頻率沒有直接關係",
+                        "發射功率與天線長度，頻寬只影響干擾的程度",
+                        "載波頻率與發射功率，頻寬只影響傳輸的距離"
+                    ],
+                    answer: 1,
+                    explanation: "R = B × η 中並未出現載波頻率，決定速率的是頻寬 B 與頻譜效率 η。"
+                },
+                {
+                    q: "電磁波在空氣中的傳播速度約為下列何者？",
+                    options: ["3 × 10¹⁰ 公尺/秒", "3 × 10⁵ 公尺/秒", "3 × 10⁸ 公尺/秒", "3 × 10⁶ 公尺/秒"],
+                    answer: 2,
+                    explanation: "電磁波以光速傳播，在空氣中約為 3 × 10⁸ m/s。"
+                },
+                {
+                    q: "5 GHz 的 UNII-1 頻段範圍為 5150 ～ 5250 MHz。若每個通道佔用 20 MHz，最多可容納幾個互不重疊的通道？",
+                    options: ["4 個", "5 個", "20 個", "10 個"],
+                    answer: 1,
+                    explanation: "頻段總寬度為 5250 − 5150 = 100 MHz，100 ÷ 20 = 5 個。"
+                },
+                {
+                    q: "某 Wi-Fi 通道的中心頻率為 5180 MHz、頻寬為 40 MHz，其實際佔用的頻率範圍為下列何者？",
+                    options: ["5140 ～ 5220 MHz", "5170 ～ 5190 MHz", "5180 ～ 5220 MHz", "5160 ～ 5200 MHz"],
+                    answer: 3,
+                    explanation: "上下界為 f_c ± B/2 = 5180 ± 20，即 5160 ～ 5200 MHz。"
+                },
+                {
+                    q: "關於無線技術的涵蓋範圍與資料速率，下列敘述何者正確？",
+                    options: [
+                        "涵蓋範圍越大速率通常越低，因為低頻的可用頻寬較窄",
+                        "涵蓋範圍越大速率通常越高，因為基地台的發射功率較大",
+                        "涵蓋範圍越大速率通常越低，因為封包需要更多次中繼轉送",
+                        "涵蓋範圍與速率之間無關，兩者由不同的調變技術各自決定"
+                    ],
+                    answer: 0,
+                    explanation: "傳得遠必須用低頻，低頻可用頻譜總量小、通道切不寬，速率因而受限。"
+                },
+                {
+                    q: "LoRaWAN 與 NB-IoT 同屬 LPWAN，兩者在頻段與佈建方式上的主要差別為何？",
+                    options: [
+                        "兩者皆使用免授權頻段，差別僅在 LoRaWAN 的傳輸距離明顯較遠",
+                        "LoRaWAN 用授權頻段須向業者申租，NB-IoT 用免授權頻段可自建 gateway",
+                        "LoRaWAN 用免授權頻段可自建 gateway，NB-IoT 用授權頻段須向業者申租",
+                        "兩者皆使用授權頻段，差別僅在 NB-IoT 的電池壽命明顯較長"
+                    ],
+                    answer: 2,
+                    explanation: "LoRaWAN 使用 sub-GHz 免授權頻段可自行架設 gateway；NB-IoT 運作於電信業者的授權頻段需申租。"
+                },
+                {
+                    q: "某 LPWAN 系統工作於 900 MHz，若採用四分之一波長的單極天線，天線長度最接近下列何者？（c = 3 × 10⁸ m/s）",
+                    options: ["8.3 公分", "3.3 公分", "16.7 公分", "33 公分"],
+                    answer: 0,
+                    explanation: "λ = (3 × 10⁸) ÷ (9 × 10⁸) = 0.333 公尺；L ≈ λ ÷ 4 = 0.083 公尺 = 8.3 公分。"
+                },
+                {
+                    q: "在台灣，負責管理無線電頻譜分配與頻段標售的主管機關為下列何者？",
+                    options: ["國家通訊傳播委員會（NCC）", "經濟部標準檢驗局", "數位發展部數位產業署", "交通部電信總局"],
+                    answer: 0,
+                    explanation: "台灣的頻譜由國家通訊傳播委員會（NCC）管理。"
+                },
+                {
+                    q: "為何 2.4 GHz 頻段的干擾問題特別嚴重？",
+                    options: [
+                        "Wi-Fi、Bluetooth、Zigbee 等多種技術共用這一段免授權頻段",
+                        "2.4 GHz 的總頻寬遠大於 5 GHz，因而容納了過多的通道",
+                        "2.4 GHz 的訊號傳不遠，裝置必須提高功率才能維持連線",
+                        "2.4 GHz 屬於授權頻段，取得使用執照的業者數量相當多"
+                    ],
+                    answer: 0,
+                    explanation: "2.4 GHz 是全球通用的免授權頻段，多種技術與微波爐在此運作，總寬度僅 83.5 MHz。"
+                }
+            ],
+            unit2: [
+                {
+                    q: "為何同一道磚牆對 5 GHz 造成的穿透損失，大於對 2.4 GHz 的損失？",
+                    options: [
+                        "5 GHz 屬於授權頻段，法規限制其穿牆的功率",
+                        "5 GHz 的傳播速度較快，在牆內停留的時間較短",
+                        "5 GHz 的可用頻寬較大，能量因此分散得較快",
+                        "5 GHz 的波長較短，穿透與繞射的能力較差"
+                    ],
+                    answer: 3,
+                    explanation: "波長越短，穿透與繞射能力越差。同一道磚牆 2.4 GHz 約損失 8 dB，5 GHz 可達 12～16 dB。"
+                },
+                {
+                    q: "10 dB 對應的功率倍數為下列何者？",
+                    options: ["2 倍", "100 倍", "20 倍", "10 倍"],
+                    answer: 3,
+                    explanation: "10 dB = 10 倍。與 3 dB = 2 倍搭配，即可組合出其餘數值。"
+                },
+                {
+                    q: "電磁波遇到尺寸遠大於波長的平滑表面而依同一角度彈開，此現象稱為什麼？",
+                    options: ["散射", "穿透", "反射", "繞射"],
+                    answer: 2,
+                    explanation: "反射（reflection）發生於平滑大表面，是多路徑效應的主要來源。"
+                },
+                {
+                    q: "兩個位置分別量到 RSSI −50 dBm 與 −80 dBm。下列敘述何者正確？",
+                    options: [
+                        "−80 dBm 較強，因為 80 這個數值比 50 更大",
+                        "−50 dBm 較強，兩者的功率相差約 30 倍",
+                        "−50 dBm 較強，兩者的功率相差約 1000 倍",
+                        "兩者強度相當，30 dB 的差距在實務上可忽略"
+                    ],
+                    answer: 2,
+                    explanation: "−50 比 −80 大，故 −50 dBm 較強。兩者相差 30 dB，而 30 dB 對應 1000 倍。"
+                },
+                {
+                    q: "電磁波在障礙物的邊緣彎折、進入其後方陰影區的現象稱為什麼？",
+                    options: ["折射", "散射", "繞射", "反射"],
+                    answer: 2,
+                    explanation: "繞射（diffraction）發生在障礙物邊緣或轉角，波長越長越明顯。"
+                },
+                {
+                    q: "多路徑造成接收訊號在極短距離內忽強忽弱，此現象稱為什麼？",
+                    options: ["小尺度衰落", "符號間干擾", "速率自適應", "自由空間路徑損失"],
+                    answer: 0,
+                    explanation: "小尺度衰落（small-scale fading）源於多路徑訊號的同相增強與反相抵銷。"
+                },
+                {
+                    q: "為何室內的無線覆蓋範圍無法只用距離來估算？",
+                    options: [
+                        "室內裝置的發射功率受法規限制，必須另行計算損耗",
+                        "牆壁與樓板造成的損耗，往往大於距離造成的衰減",
+                        "距離造成的衰減在室內完全不成立，只剩牆壁的影響",
+                        "室內的電磁波傳播速度比室外慢，衰減規律並不相同"
+                    ],
+                    answer: 1,
+                    explanation: "自由空間的 6 dB 規則只是起點。一道混凝土牆可達 15～20 dB，建材往往是決定性因素。"
+                },
+                {
+                    q: "訊號強度隨距離衰減，最根本的物理成因為下列何者？",
+                    options: [
+                        "電磁波在空氣中前進的速度會隨距離逐漸減慢而失去能量",
+                        "同一份能量被攤在越來越大的面積上，單位面積分到的功率變少",
+                        "空氣分子會持續吸收電磁波的能量，距離越遠吸收得越多",
+                        "天線的發射功率會隨著傳送距離的增加而自動降低輸出"
+                    ],
+                    answer: 1,
+                    explanation: "衰減來自能量的幾何擴散，而非空氣吸收。"
+                },
+                {
+                    q: "下列四種障礙物中，何者的穿透損失最大？",
+                    options: ["木質隔板", "石膏板輕隔間", "一般玻璃", "金屬門與電梯"],
+                    answer: 3,
+                    explanation: "金屬門、電梯與鍍膜玻璃的穿透損失可達 20 dB 以上。"
+                },
+                {
+                    q: "電磁波遇到尺寸接近波長的小物體，能量被打散到各個方向，此現象稱為什麼？",
+                    options: ["穿透", "反射", "散射", "繞射"],
+                    answer: 2,
+                    explanation: "散射（scattering）由粗糙面、雨滴、樹葉等尺寸接近波長的物體造成。"
+                },
+                {
+                    q: "某位置量到 RSSI −72 dBm，雜訊水準為 −92 dBm。SNR 最接近下列何者？",
+                    options: ["20 dB", "−20 dB", "164 dB", "4 dB"],
+                    answer: 0,
+                    explanation: "SNR = 訊號 − 雜訊 = −72 −（−92）= 20 dB。"
+                },
+                {
+                    q: "RSSI 所表示的是下列何者？",
+                    options: ["訊號與雜訊的功率比值", "發射端輸出的訊號強度", "訊號在空間中傳播的距離", "接收端實際量測到的訊號強度"],
+                    answer: 3,
+                    explanation: "RSSI 是接收訊號強度指標，以 dBm 表示接收端量到的功率。"
+                },
+                {
+                    q: "符號間干擾（ISI）的成因為下列何者？",
+                    options: [
+                        "前一符號的反射波延遲抵達，與後一符號重疊",
+                        "兩台裝置同時發送，兩份封包在空中互相碰撞",
+                        "接收機的底噪過高，把相鄰的符號淹沒而無法分辨",
+                        "發射端的調變階數過低，使每個符號承載的位元太少"
+                    ],
+                    answer: 0,
+                    explanation: "ISI 源於延遲擴散：反射波遲到，落在下一個符號的接收區間內。"
+                },
+                {
+                    q: "關於 RSSI 的數值，下列敘述何者正確？",
+                    options: [
+                        "一律為負值，數值越接近 0 代表訊號越弱",
+                        "一律為正值，數值越大代表訊號越強",
+                        "一律為負值，數值越接近 0 代表訊號越強",
+                        "可正可負，正負號代表頻段的高低"
+                    ],
+                    answer: 2,
+                    explanation: "接收功率遠小於 1 mW，故 RSSI 一律為負值。數值越接近 0 代表越強。"
+                },
+                {
+                    q: "為何訊號的衰減量與「距離加倍的次數」成正比，而不是與距離本身成正比？",
+                    options: [
+                        "因為空氣對電磁波的吸收量與距離的平方成正比",
+                        "因為距離增加時，電磁波的傳播速度會等比例下降",
+                        "因為 dB 是對數刻度，距離每乘以 2 就再加 6 dB",
+                        "因為天線的增益會隨著距離的增加而等比例衰減"
+                    ],
+                    answer: 2,
+                    explanation: "dB 是對數刻度，乘法在對數下變成加法（距離 ×2 加 6 dB）。"
+                },
+                {
+                    q: "裝置持續量測 SNR 並自動切換調變方式的機制，稱為什麼？",
+                    options: ["延遲擴散", "小尺度衰落", "速率自適應", "鏈路預算"],
+                    answer: 2,
+                    explanation: "速率自適應（rate adaptation）使速率隨 SNR 階梯式變化。"
+                },
+                {
+                    q: "3 dB 對應的功率倍數為下列何者？",
+                    options: ["10 倍", "3 倍", "4 倍", "2 倍"],
+                    answer: 3,
+                    explanation: "3 dB = 2 倍，是 dB 換算中最重要的一組對應。"
+                },
+                {
+                    q: "在 AP 同一房間量到 −48 dBm。走到隔著一道混凝土牆（15 dB）與一道木門（4 dB）的位置，訊號強度最接近下列何者？",
+                    options: ["−52 dBm", "−82 dBm", "−67 dBm", "−63 dBm"],
+                    answer: 2,
+                    explanation: "總損耗 15 + 4 = 19 dB，故 −48 − 19 = −67 dBm。"
+                },
+                {
+                    q: "在無遮蔽的自由空間中，距離每加倍一次，訊號約衰減多少 dB？",
+                    options: ["20 dB", "6 dB", "10 dB", "3 dB"],
+                    answer: 1,
+                    explanation: "距離加倍時截面積變為 4 倍，功率降為 1/4，換算成 dB 即 6 dB。"
+                },
+                {
+                    q: "由於小尺度衰落的存在，實驗一在每個量測點讀取 RSSI 時，正確的做法是什麼？",
+                    options: [
+                        "只讀取一次即可，重複讀取會造成數值失真",
+                        "取該點所出現過的最強一次讀數作為代表",
+                        "在該點停留數秒，取多次讀數的平均值",
+                        "先將手機貼近牆面，待數值歸零後再開始讀取"
+                    ],
+                    answer: 2,
+                    explanation: "取多次平均才能代表該點的實際強度；只取最強值會高估覆蓋範圍。"
+                },
+                {
+                    q: "某 AP 發射功率 18 dBm、發射天線增益 2 dB，路徑損失 65 dB，接收天線增益 0 dB。接收功率最接近下列何者？",
+                    options: ["−47 dBm", "−85 dBm", "−49 dBm", "−45 dBm"],
+                    answer: 3,
+                    explanation: "Pr = 18 + 2 + 0 − 65 = −45 dBm。"
+                },
+                {
+                    q: "某放大器的增益為 16 dB，代表功率放大為幾倍？",
+                    options: ["40 倍", "16 倍", "60 倍", "20 倍"],
+                    answer: 0,
+                    explanation: "16 dB = 10 + 3 + 3，對應 10 × 2 × 2 = 40 倍。"
+                },
+                {
+                    q: "某裝置的發射功率為 200 mW，以 dBm 表示最接近下列何者？",
+                    options: ["2 dBm", "26 dBm", "20 dBm", "23 dBm"],
+                    answer: 3,
+                    explanation: "200 = 100 × 2，對應 20 + 3 = 23 dBm。"
+                },
+                {
+                    q: "「某 AP 的發射功率為 20 dB」這句話錯在何處？",
+                    options: [
+                        "dB 是比值，未指明基準，絕對功率應寫成 dBm",
+                        "發射功率的數值不可以是正數，應寫成 −20 dB",
+                        "dB 只能用於接收端，發射端一律必須使用 dBi",
+                        "dB 只能表示增益，損失必須改用另一個單位表示"
+                    ],
+                    answer: 0,
+                    explanation: "dB 是兩個功率的比值，絕對功率必須用 dBm（基準 1 mW）。"
+                },
+                {
+                    q: "多路徑中最早抵達與最晚抵達的訊號之時間差，稱為什麼？",
+                    options: ["底噪", "延遲擴散", "餘裕", "小尺度衰落"],
+                    answer: 1,
+                    explanation: "延遲擴散（delay spread）為各路徑抵達時間的差距。"
+                },
+                {
+                    q: "無線工程全面採用 dB 表示功率，最主要的好處為下列何者？",
+                    options: [
+                        "可以完全免除量測誤差，使計算結果更為精確",
+                        "可以把負數的接收功率轉換成比較好閱讀的正數",
+                        "可以讓不同頻段的訊號使用同一套單位來比較",
+                        "原本的乘除運算變成加減運算，整條鏈路只需加減"
+                    ],
+                    answer: 3,
+                    explanation: "取對數之後乘除變加減，這是 dB 最大的價值。"
+                },
+                {
+                    q: "一個 20 MHz 通道的雜訊底噪，實務上約在下列哪個數值附近？",
+                    options: ["−30 dBm", "−140 dBm", "−95 dBm", "−60 dBm"],
+                    answer: 2,
+                    explanation: "20 MHz 通道的理論底噪約 −101 dBm，考慮接收機雜訊後約在 −95 dBm 附近。"
+                },
+                {
+                    q: "某使用者的 Wi-Fi 訊號顯示滿格，但網路速度非常慢。最可能的原因為下列何者？",
+                    options: [
+                        "AP 的發射功率設定過高，導致封包在空中互相碰撞",
+                        "訊號強度太強造成接收機飽和，必須遠離 AP 才能改善",
+                        "裝置的天線增益過低，無法把滿格的訊號完整接收",
+                        "周邊干擾使雜訊水準升高，SNR 因此明顯不足"
+                    ],
+                    answer: 3,
+                    explanation: "格數只反映 RSSI。訊號不變而雜訊升高時 SNR 大幅下降，速率因此降低。"
+                },
+                {
+                    q: "在距離 AP 10 公尺處量到 −52 dBm。若移動到 80 公尺處（無遮蔽），訊號強度最接近下列何者？",
+                    options: ["−64 dBm", "−76 dBm", "−58 dBm", "−70 dBm"],
+                    answer: 3,
+                    explanation: "10 → 20 → 40 → 80，距離加倍 3 次，衰減 6 × 3 = 18 dB，故 −52 − 18 = −70 dBm。"
+                },
+                {
+                    q: "為何接收端只要移動幾公分，訊號強度就可能出現十幾 dB 的變化？",
+                    options: [
+                        "兩條路徑長度差半個波長即反相，2.4 GHz 約 6 公分",
+                        "距離只要微小變化，自由空間路徑損失就會大幅增加",
+                        "接收天線的增益對角度極為敏感，稍微轉動就大幅下降",
+                        "裝置在移動過程中會自動降低發射功率以節省電力"
+                    ],
+                    answer: 0,
+                    explanation: "多路徑疊加取決於相位。路徑差半個波長就從同相變反相。"
+                },
+                {
+                    q: "一般建議串流影音與語音通話所需的 RSSI 下限約為多少？",
+                    options: ["−90 dBm", "−80 dBm", "−30 dBm", "−67 dBm"],
+                    answer: 3,
+                    explanation: "−67 dBm 是工程上常用的實務下限。"
+                },
+                {
+                    q: "20 dBm 等於多少毫瓦？",
+                    options: ["20 mW", "100 mW", "1000 mW", "200 mW"],
+                    answer: 1,
+                    explanation: "20 dB 對應 100 倍，基準為 1 mW，故 20 dBm = 100 mW。"
+                },
+                {
+                    q: "關於 dB 與 dBm，下列敘述何者正確？",
+                    options: [
+                        "dB 表示絕對功率，dBm 表示兩個功率的比值",
+                        "兩者皆表示絕對功率，差別僅在基準單位不同",
+                        "dB 表示兩個功率的比值，dBm 表示絕對功率",
+                        "兩者皆表示比值，差別僅在對數的底數不同"
+                    ],
+                    answer: 2,
+                    explanation: "dB 是比值；dBm 把基準固定為 1 mW，表示絕對功率。"
+                },
+                {
+                    q: "dBm 這個單位是以多少功率作為基準？",
+                    options: ["1 微瓦（µW）", "1 瓦（W）", "1 千瓦（kW）", "1 毫瓦（mW）"],
+                    answer: 3,
+                    explanation: "dBm 的 m 代表 milliwatt，基準為 1 mW。"
+                },
+                {
+                    q: "使用者從 AP 旁走到走廊盡頭，速率明顯下降。下列因果鏈何者正確？",
+                    options: [
+                        "路徑損失增加 → 載波頻率自動降低 → η 隨之變小 → 速率因此下降",
+                        "路徑損失增加 → 底噪隨之升高 → SNR 下降 → 頻寬 B 被自動縮減",
+                        "路徑損失增加 → 通道頻寬 B 被自動縮減 → 由 R = B × η 得知速率下降",
+                        "路徑損失增加 → RSSI 下降 → SNR 下降 → 調變階數降低 → 速率下降"
+                    ],
+                    answer: 3,
+                    explanation: "距離改變的是 RSSI 與 SNR，進而改變調變階數（η）。"
+                }
+            ],
+            unit3: [
+                {
+                    q: "某鏈路每秒可送出 90 Mbps 的位元（含檢查位元），採用編碼率 2/3。使用者實際得到的資料速率為多少？",
+                    options: ["45 Mbps", "60 Mbps", "30 Mbps", "135 Mbps"],
+                    answer: 1,
+                    explanation: "資料速率 = 送出速率 × 編碼率 = 90 × (2 ÷ 3) = 60 Mbps。"
+                },
+                {
+                    q: "編碼率（coding rate）的定義為下列何者？",
+                    options: ["資料位元數 ÷ 送出位元數", "資料位元數 ÷ 每符號位元數", "檢查位元數 ÷ 資料位元數", "送出位元數 ÷ 資料位元數"],
+                    answer: 0,
+                    explanation: "編碼率 = 資料位元數 ÷ 送出位元數，數值必然小於 1。"
+                },
+                {
+                    q: "MCS（調變與編碼方案）是下列哪兩者事先配好的固定組合？",
+                    options: ["發射功率與天線增益", "頻寬與通道號碼", "子載波數與保護間隔", "調變階數與編碼率"],
+                    answer: 3,
+                    explanation: "MCS 把調變階數與編碼率兩者配成固定組合並編號，裝置之間協商的就是這個編號。"
+                },
+                {
+                    q: "「多工（multiplexing）」與「多重存取（multiple access）」的主要差別為下列何者？",
+                    options: [
+                        "前者的規則由接收端決定，後者由發送端決定",
+                        "前者切割的是頻率，後者切割的則是時間",
+                        "前者著眼通道的利用，後者著眼使用者的協調",
+                        "前者只用於無線環境，後者只用於有線環境"
+                    ],
+                    answer: 2,
+                    explanation: "多工處理的是把多路訊號合併到同一條通道，多重存取處理的是多個獨立使用者共用同一段頻譜。"
+                },
+                {
+                    q: "LTE 的子載波間隔為 15 kHz。依「符號長度為子載波間隔的倒數」，其符號長度約為多少？",
+                    options: ["15 µs", "6.67 µs", "150 µs", "66.7 µs"],
+                    answer: 3,
+                    explanation: "符號長度 = 1 ÷ 15 kHz = 1 ÷ 15,000 秒 ≈ 0.0000667 秒 = 66.7 µs。"
+                },
+                {
+                    q: "CDMA 讓多個使用者同時使用同一段頻率，接收端靠什麼把自己的資料分離出來？",
+                    options: ["各自不同的子載波", "各自不同的發射功率", "各自不同的時間槽", "事先分配的展頻碼"],
+                    answer: 3,
+                    explanation: "CDMA 讓所有使用者的訊號完整疊在同一塊資源上，接收端用自己的展頻碼去比對疊加後的訊號。"
+                },
+                {
+                    q: "在 PSK 的波形上，位元交界處會看到什麼現象？",
+                    options: ["訊號短暫中斷", "波峰高度改變", "波形突然反轉", "波形變疏或變密"],
+                    answer: 2,
+                    explanation: "PSK 改變的是相位，因此在代表不同位元的交界處，波形會突然反轉。"
+                },
+                {
+                    q: "關於「OFDM 把頻寬切開，所以速率會變慢」這個說法，下列判斷何者正確？",
+                    options: [
+                        "正確，頻寬被切成 64 份後每份只剩六十四分之一",
+                        "錯誤，切開的是頻寬的使用方式，總頻寬並未減少",
+                        "正確，但因為同時使用多個天線所以速率得以維持",
+                        "錯誤，OFDM 反而會使總頻寬增加為原來的 64 倍"
+                    ],
+                    answer: 1,
+                    explanation: "OFDM 改變的是使用方式，總頻寬仍是 20 MHz，64 個子載波同時在傳，總速率與單載波相當。"
+                },
+                {
+                    q: "在 FSK 的波形圖上，代表 0 的那一段振盪得比較慢。這代表下列何者？",
+                    options: [
+                        "該段時間內訊號強度較弱，因此波看起來較疏",
+                        "該段時間內資料速率較低，位元被拉長了",
+                        "該段時間內載波的頻率較低，位元長度並未改變",
+                        "該段時間內取樣率較低，波形被畫得較粗略"
+                    ],
+                    answer: 2,
+                    explanation: "FSK 改變的是載波頻率，每一個位元所佔的時間長度完全相同，改變的只是那段時間裡振盪了幾次。"
+                },
+                {
+                    q: "OFDM 名稱中的「正交（orthogonal）」描述的是什麼？",
+                    options: ["發射與接收使用互相垂直的天線", "資料位元與檢查位元互相獨立", "子載波彼此緊貼卻互不干擾", "頻率軸與時間軸互相垂直"],
+                    answer: 2,
+                    explanation: "正交指每一個子載波的頻率剛好落在其餘子載波能量為零的位置，因此彼此緊貼卻互不干擾。"
+                },
+                {
+                    q: "64-QAM 的每一個符號可以承載幾個位元？",
+                    options: ["8 個", "6 個", "64 個", "16 個"],
+                    answer: 1,
+                    explanation: "由 M = 2^k，64 = 2 的 6 次方，故每符號 6 個位元。"
+                },
+                {
+                    q: "802.11a/g/n 的 OFDM 保護間隔（GI）長度為多少？",
+                    options: ["4.0 µs", "0.8 µs", "0.05 µs", "3.2 µs"],
+                    answer: 1,
+                    explanation: "保護間隔為 0.8 µs，用來吸收前一符號的回音。"
+                },
+                {
+                    q: "下列哪一種基本調變方式，被 Bluetooth 的基本速率模式所採用？",
+                    options: ["FSK", "ASK", "OFDMA", "256-QAM"],
+                    answer: 0,
+                    explanation: "Bluetooth 的基本速率採用 FSK 的變形，抗雜訊能力好且實作簡單。"
+                },
+                {
+                    q: "以 `R ≈ B × k × 編碼率` 估算：頻寬 40 MHz、採用 256-QAM、編碼率 3/4，其理論上限為多少？",
+                    options: ["120 Mbps", "240 Mbps", "320 Mbps", "180 Mbps"],
+                    answer: 1,
+                    explanation: "256-QAM 的每符號位元數 k = 8。R ≈ 40 × 8 × (3 ÷ 4) = 240 Mbps。"
+                },
+                {
+                    q: "把編碼率由 3/4 改為 1/2，會產生什麼結果？",
+                    options: [
+                        "抗錯能力提高，且使用者得到的資料速率上升",
+                        "抗錯能力與資料速率都維持原來的水準",
+                        "抗錯能力提高，但使用者得到的資料速率下降",
+                        "抗錯能力下降，但使用者得到的資料速率上升"
+                    ],
+                    answer: 2,
+                    explanation: "編碼率降低表示檢查位元佔掉更多額度，資料位元變少、速率下降；換得的是接收端修正錯誤的能力變強。"
+                },
+                {
+                    q: "某教室內量到的訊號強度高達 −45 dBm（訊號滿格），但實際連線速率卻不高。最可能的原因為下列何者？",
+                    options: [
+                        "距離太近使多路徑效應消失，速率自適應無法運作",
+                        "訊號過強導致接收端飽和，必須改用低階調變",
+                        "訊號強度只影響涵蓋範圍，與資料速率完全無關",
+                        "干擾使雜訊水準被抬高，SNR 不足以支撐高階調變"
+                    ],
+                    answer: 3,
+                    explanation: "決定調變階數的是 SNR，干擾使雜訊水準抬高時 SNR 不足，只能用低階調變。"
+                },
+                {
+                    q: "正弦載波可供調變使用的性質共有三個，下列何者不是其中之一？",
+                    options: ["振幅", "波長", "相位", "頻率"],
+                    answer: 1,
+                    explanation: "波長不是可獨立調整的性質，它是由頻率決定的結果。"
+                },
+                {
+                    q: "前向錯誤更正（FEC）的目的為下列何者？",
+                    options: [
+                        "讓接收端在少量錯誤時能自行修正，不必重傳",
+                        "壓縮資料量，讓同一段頻寬能載更多內容",
+                        "在錯誤發生時立刻通知發送端重新傳送一次",
+                        "把資料加密，使中途攔截者無法讀取內容"
+                    ],
+                    answer: 0,
+                    explanation: "FEC 在送出時附上檢查位元，使接收端能自行修正少量錯誤，省去重傳時間。"
+                },
+                {
+                    q: "OFDMA 是從哪一代 Wi-Fi 開始採用的？",
+                    options: ["Wi-Fi 4（802.11n）", "Wi-Fi 7（802.11be）", "Wi-Fi 5（802.11ac）", "Wi-Fi 6（802.11ax）"],
+                    answer: 3,
+                    explanation: "OFDMA 是 Wi-Fi 6（802.11ax）的重點新功能。"
+                },
+                {
+                    q: "把符號長度由 0.05 µs 拉長到 3.2 µs，主要解決了什麼問題？",
+                    options: [
+                        "天線不必再配合波長，長度可以做得更短",
+                        "同一段頻寬能容納更多子載波，總速率因此提高",
+                        "回音只汙染符號的一小段，符號間干擾大幅減輕",
+                        "接收端有更長的時間量測 SNR，判斷更為準確"
+                    ],
+                    answer: 2,
+                    explanation: "拉長到 3.2 µs 後，回音只佔符號的一小段，大幅減輕符號間干擾（ISI）。"
+                },
+                {
+                    q: "為何無線系統很少單獨使用 ASK？",
+                    options: [
+                        "振幅正是最容易受衰減與雜訊影響的性質",
+                        "ASK 所佔用的頻寬比其他兩種明顯更寬",
+                        "ASK 無法讓一個符號承載兩個以上的位元",
+                        "ASK 的電路比其他兩種調變複雜許多"
+                    ],
+                    answer: 0,
+                    explanation: "訊號強度會隨距離與環境劇烈變化，而 ASK 以振幅大小區分 0 與 1，最易被破壞。"
+                },
+                {
+                    q: "16-QAM 與 256-QAM 的星座圖上都畫著同樣大小的雜訊圈，這樣畫的用意為下列何者？",
+                    options: [
+                        "強調高階調變會使環境中的雜訊變得更強",
+                        "強調雜訊圈的大小與調變階數無關而與頻寬有關",
+                        "強調兩種調變所需的發射功率完全相同",
+                        "強調雜訊本身沒變，改變的是點與點的距離"
+                    ],
+                    answer: 3,
+                    explanation: "雜訊大小由 SNR 決定，256-QAM 在同樣功率範圍內塞更多點，點距變小，同一份雜訊足以造成誤判。"
+                },
+                {
+                    q: "在星座圖上，一個點與原點的距離代表載波的什麼？",
+                    options: ["振幅", "相位", "編碼率", "頻率"],
+                    answer: 0,
+                    explanation: "星座圖上點到原點的距離代表振幅，點的方向代表相位。"
+                },
+                {
+                    q: "某系統每秒送出 2,000,000 個符號，採用 16-QAM。其資料速率為多少？",
+                    options: ["4 Mbps", "8 Mbps", "32 Mbps", "2 Mbps"],
+                    answer: 1,
+                    explanation: "16-QAM 每符號 4 位元。資料速率 = 2,000,000 × 4 = 8 Mbps。"
+                },
+                {
+                    q: "ASK（Amplitude Shift Keying）以載波的何種變化代表 0 與 1？",
+                    options: ["極化的方向", "振幅的大小", "波形的起點", "振盪的快慢"],
+                    answer: 1,
+                    explanation: "ASK 以波的高度大小（振幅）代表 0 與 1。"
+                },
+                {
+                    q: "在 SNR 不足的情況下勉強採用高階調變，為何實際速率反而更慢？",
+                    options: [
+                        "高階調變必須搭配更低的編碼率，資料位元因此變少",
+                        "誤判使整個符號的位元全錯而必須重傳，往返耗時更久",
+                        "高階調變的電路運算量較大，處理時間明顯拉長",
+                        "高階調變會佔用更寬的頻寬，反而擠壓可用的通道"
+                    ],
+                    answer: 1,
+                    explanation: "誤判導致符號全錯需要重傳，重傳往返的往返時間比低階調變更長。"
+                },
+                {
+                    q: "某裝置量到 RSSI 為 −58 dBm、雜訊水準為 −86 dBm。依本單元的對照表，最高可採用哪一種調變？",
+                    options: ["256-QAM，每符號 8 位元", "16-QAM，每符號 4 位元", "64-QAM，每符號 6 位元", "QPSK，每符號 2 位元"],
+                    answer: 2,
+                    explanation: "SNR = −58 − (−86) = 28 dB。超過 64-QAM 的門檻 25 dB，未達 256-QAM 的 31 dB。"
+                },
+                {
+                    q: "某 OFDM 系統的通道寬度為 40 MHz，使用 64 個子載波。其子載波間隔為多少？",
+                    options: ["1250 kHz", "625 kHz", "312.5 kHz", "156.25 kHz"],
+                    answer: 1,
+                    explanation: "子載波間隔 = 40 MHz ÷ 64 = 40,000 kHz ÷ 64 = 625 kHz。"
+                },
+                {
+                    q: "在數位調變中，「符號（symbol）」指的是什麼？",
+                    options: [
+                        "一個位元在傳輸線上所佔的電壓位準",
+                        "載波維持某一特定狀態的一小段固定時間",
+                        "封包開頭用來同步的一段固定位元組",
+                        "接收端用來判斷訊號強弱的門檻值"
+                    ],
+                    answer: 1,
+                    explanation: "符號是載波維持某一特定狀態（振幅與相位組合）的那一小段固定時間。"
+                },
+                {
+                    q: "OFDM 讓每個子載波都用很低的符號率傳送，為何總速率不會因此下降？",
+                    options: [
+                        "因為有很多子載波同時在傳，加總後速率不變",
+                        "因為每個子載波都改用更高階的調變來補足",
+                        "因為切開後每個子載波的頻寬反而變得更寬",
+                        "因為保護間隔把損失掉的那部分速率補回來"
+                    ],
+                    answer: 0,
+                    explanation: "單一子載波速率降低，但子載波數量同步增加相同倍數，加總後總速率不變。"
+                },
+                {
+                    q: "802.11g 以 `R ≈ B × k × 編碼率` 估算得 90 Mbps，實際規格卻只有 54 Mbps。這 36 Mbps 的差距主要來自何處？",
+                    options: [
+                        "空氣對電磁波的吸收，以及天線的插入損失",
+                        "不載資料的子載波，以及保護間隔佔掉的時間",
+                        "鄰近通道的干擾，以及接收端的底噪",
+                        "封包重傳所浪費的時間，以及加密運算的負擔"
+                    ],
+                    answer: 1,
+                    explanation: "由載資料子載波比例（48/64）與符號載資料時間比例（3.2/4.0）相乘得 0.6，90 × 0.6 = 54 Mbps。"
+                },
+                {
+                    q: "Wi-Fi 在 20 MHz 的通道上使用 64 個子載波，其子載波間隔為多少？",
+                    options: ["312.5 kHz", "625 kHz", "78.125 kHz", "20 kHz"],
+                    answer: 0,
+                    explanation: "20 MHz ÷ 64 = 20,000 kHz ÷ 64 = 312.5 kHz。"
+                },
+                {
+                    q: "QAM（正交振幅調變）同時改變載波的哪兩個性質？",
+                    options: ["振幅與相位", "振幅與頻率", "頻率與波長", "頻率與相位"],
+                    answer: 0,
+                    explanation: "QAM 同時改變振幅與相位。"
+                },
+                {
+                    q: "OFDMA 相較於 OFDM，主要提升的是什麼？",
+                    options: [
+                        "訊號能夠傳送的最遠距離",
+                        "裝置在待機狀態下的省電效果",
+                        "單一裝置能達到的最高速率",
+                        "同一時間內能服務的裝置數量"
+                    ],
+                    answer: 3,
+                    explanation: "OFDMA 把子載波分組，讓同一個時間點能同時服務多個使用者。"
+                },
+                {
+                    q: "既然星座圖上的點越多速率越高，為何不直接採用上萬個點？",
+                    options: [
+                        "接收端的天線長度無法配合過多的點數",
+                        "點距會小到雜訊足以使接收端誤判成隔壁的點",
+                        "點數超過一定數量後所佔用的頻寬會急速增加",
+                        "星座圖上的點數受到標準規定的上限所限制"
+                    ],
+                    answer: 1,
+                    explanation: "點數增加而功率不變時，點距變小，同樣大小的雜訊足以造成誤判。"
+                }
+            ]
+        };
+
+        let currentQuizQuestions = [];
+        let userAnswers = {};
+
+        window.onload = function() {
+            checkSavedProgress();
+        };
+
+        function checkSavedProgress() {
+            const saved = localStorage.getItem('wireless_quiz_saved');
+            const resumeBtn = document.getElementById('resume-btn');
+            if (saved) {
+                resumeBtn.classList.remove('hidden');
+            } else {
+                resumeBtn.classList.add('hidden');
+            }
+        }
+
+        function shuffle(array) {
+            let currentIndex = array.length, randomIndex;
+            while (currentIndex !== 0) {
+                randomIndex = Math.floor(Math.random() * currentIndex);
+                currentIndex--;
+                [array[currentIndex], array[randomIndex]] = [array[randomIndex], array[currentIndex]];
+            }
+            return array;
+        }
+
+        function startQuiz(isResume = false) {
+            if (isResume) {
+                const savedData = JSON.parse(localStorage.getItem('wireless_quiz_saved'));
+                if (savedData) {
+                    currentQuizQuestions = savedData.questions;
+                    userAnswers = savedData.answers;
+                }
+            } else {
+                const selectedUnits = [];
+                document.querySelectorAll('input[name="unit-select"]:checked').forEach(cb => {
+                    selectedUnits.push(cb.value);
+                });
+
+                if (selectedUnits.length === 0) {
+                    alert("請至少選擇一個單元！");
+                    return;
+                }
+
+                let pool = [];
+                selectedUnits.forEach(u => {
+                    if (unitsData[u]) {
+                        pool = pool.concat(unitsData[u]);
+                    }
+                });
+
+                currentQuizQuestions = JSON.parse(JSON.stringify(pool));
+                shuffle(currentQuizQuestions);
+
+                currentQuizQuestions.forEach(item => {
+                    let optionsWithIndex = item.options.map((opt, idx) => ({ text: opt, isCorrect: idx === item.answer }));
+                    shuffle(optionsWithIndex);
+                    item.options = optionsWithIndex.map(o => o.text);
+                    item.answer = optionsWithIndex.findIndex(o => o.isCorrect);
+                });
+
+                userAnswers = {};
+                localStorage.removeItem('wireless_quiz_saved');
+            }
+
+            document.getElementById('start-screen').classList.add('hidden');
+            document.getElementById('result-screen').classList.add('hidden');
+            document.getElementById('review-screen').classList.add('hidden');
+            document.getElementById('quiz-screen').classList.remove('hidden');
+
+            renderQuestions();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function resumeQuiz() {
+            startQuiz(true);
+        }
+
+        function pauseQuiz() {
+            const state = {
+                questions: currentQuizQuestions,
+                answers: userAnswers
+            };
+            localStorage.setItem('wireless_quiz_saved', JSON.stringify(state));
+            alert("進度已暫存！您可以隨時回來繼續。");
+            resetToStart();
+        }
+
+        function resetToStart() {
+            checkSavedProgress();
+            document.getElementById('quiz-screen').classList.add('hidden');
+            document.getElementById('result-screen').classList.add('hidden');
+            document.getElementById('review-screen').classList.add('hidden');
+            document.getElementById('start-screen').classList.remove('hidden');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function renderQuestions() {
+            const container = document.getElementById('questions-container');
+            container.innerHTML = '';
+            const total = currentQuizQuestions.length;
+
+            currentQuizQuestions.forEach((item, qIndex) => {
+                let optionsHtml = '';
+                item.options.forEach((opt, oIndex) => {
+                    const isChecked = userAnswers[qIndex] === oIndex ? 'checked' : '';
+                    optionsHtml += `
+                        <label class="flex items-start gap-3 p-3 rounded-lg border border-slate-200 hover:bg-slate-50 cursor-pointer transition">
+                            <input type="radio" name="question-${qIndex}" value="${oIndex}" ${isChecked} onchange="recordAnswer(${qIndex}, ${oIndex})" class="mt-1 text-indigo-600 focus:ring-indigo-500">
+                            <span class="text-slate-700 text-sm md:text-base">${String.fromCharCode(65 + oIndex)}. ${opt}</span>
+                        </label>
+                    `;
+                });
+
+                container.innerHTML += `
+                    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 space-y-4">
+                        <h3 class="font-bold text-slate-800 text-base md:text-lg">第 ${qIndex + 1} 題：${item.q}</h3>
+                        <div class="space-y-2">
+                            ${optionsHtml}
+                        </div>
+                    </div>
+                `;
+            });
+            const answeredCount = Object.keys(userAnswers).length;
+            document.getElementById('progress-indicator').innerText = `已作答 ${answeredCount} / ${total}`;
+        }
+
+        function recordAnswer(qIndex, oIndex) {
+            userAnswers[qIndex] = oIndex;
+            const answeredCount = Object.keys(userAnswers).length;
+            const total = currentQuizQuestions.length;
+            document.getElementById('progress-indicator').innerText = `已作答 ${answeredCount} / ${total}`;
+        }
+
+        function submitQuiz() {
+            const total = currentQuizQuestions.length;
+            let correctCount = 0;
+            currentQuizQuestions.forEach((item, qIndex) => {
+                if (userAnswers[qIndex] === item.answer) {
+                    correctCount++;
+                }
+            });
+
+            const percentage = ((correctCount / total) * 100).toFixed(1);
+
+            document.getElementById('score-text').innerText = `${correctCount} / ${total}`;
+            document.getElementById('percentage-text').innerText = `${percentage}%`;
+
+            localStorage.removeItem('wireless_quiz_saved');
+            checkSavedProgress();
+
+            document.getElementById('quiz-screen').classList.add('hidden');
+            document.getElementById('result-screen').classList.remove('hidden');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function reviewAnswers() {
+            document.getElementById('result-screen').classList.add('hidden');
+            const reviewContainer = document.getElementById('review-container');
+            reviewContainer.innerHTML = '';
+
+            currentQuizQuestions.forEach((item, qIndex) => {
+                const userChoice = userAnswers[qIndex];
+                const isCorrect = userChoice === item.answer;
+                const statusBadge = isCorrect 
+                    ? `<span class="bg-emerald-100 text-emerald-800 text-xs font-semibold px-2.5 py-1 rounded-full">答對</span>`
+                    : `<span class="bg-rose-100 text-rose-800 text-xs font-semibold px-2.5 py-1 rounded-full">答錯</span>`;
+
+                let optionsHtml = '';
+                item.options.forEach((opt, oIndex) => {
+                    let style = "border-slate-200 text-slate-700 bg-white";
+                    if (oIndex === item.answer) {
+                        style = "border-emerald-500 bg-emerald-50 text-emerald-900 font-medium";
+                    } else if (oIndex === userChoice && !isCorrect) {
+                        style = "border-rose-500 bg-rose-50 text-rose-900 line-through";
+                    }
+
+                    optionsHtml += `
+                        <div class="p-2.5 rounded-lg border ${style} text-sm">
+                            ${String.fromCharCode(65 + oIndex)}. ${opt}
+                        </div>
+                    `;
+                });
+
+                reviewContainer.innerHTML += `
+                    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 space-y-4">
+                        <div class="flex justify-between items-start">
+                            <h3 class="font-bold text-slate-800 text-base">第 ${qIndex + 1} 題：${item.q}</h3>
+                            ${statusBadge}
+                        </div>
+                        <div class="space-y-2">
+                            ${optionsHtml}
+                        </div>
+                        <div class="bg-slate-50 p-4 rounded-xl text-sm text-slate-600 border border-slate-100 mt-2">
+                            <span class="font-semibold text-slate-700">詳解：</span>${item.explanation}
+                        </div>
+                    </div>
+                `;
+            });
+
+            document.getElementById('review-screen').classList.remove('hidden');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+    </script>
+</body>
+</html>
