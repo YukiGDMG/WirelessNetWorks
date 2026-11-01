@@ -12,7 +12,7 @@
     <div class="max-w-3xl mx-auto">
         <!-- 頂部功能列（含 Gemini 風格深色模式切換按鈕） -->
         <div class="flex justify-end mb-4">
-            <button onclick="toggleGeminiDarkMode()" id="dark-mode-btn" class="flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold bg-white text-slate-700 border border-slate-200 shadow-sm hover:bg-slate-100 transition cursor-pointer">
+            <button onclick="toggleGeminiDarkMode()" id="dark-mode-btn" tabindex="-1" class="flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold bg-white text-slate-700 border border-slate-200 shadow-sm hover:bg-slate-100 transition cursor-pointer">
                 <span id="theme-icon">🌙</span> <span id="theme-text">切換深色模式</span>
             </button>
         </div>
@@ -20,7 +20,7 @@
         <!-- 標題區 -->
         <header class="text-center mb-8">
             <h1 id="main-title" class="text-3xl font-bold text-indigo-600 mb-2 transition-colors duration-300">無線通訊原理 - 綜合練習系統</h1>
-            <p id="main-subtitle" class="text-slate-600 transition-colors duration-300">聽話！讓我看看！</p>
+            <p id="main-subtitle" class="text-slate-600 transition-colors duration-300">聽話！讓我看看你的無線通訊實力！</p>
         </header>
 
         <!-- 開始畫面 / 單元選擇 -->
@@ -33,28 +33,28 @@
             <!-- 單元勾選清單 -->
             <div class="space-y-3 max-w-lg mx-auto">
                 <label class="unit-label flex items-center gap-3 p-4 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer transition">
-                    <input type="checkbox" name="unit-select" value="unit1" checked onchange="updateSliderRange()" class="w-5 h-5 text-indigo-600 rounded focus:ring-indigo-500">
+                    <input type="checkbox" name="unit-select" value="unit1" checked onchange="updateSliderRange()" tabindex="-1" class="w-5 h-5 text-indigo-600 rounded focus:ring-indigo-500">
                     <div>
                         <span class="unit-title font-bold text-slate-800 block transition-colors duration-300">單元一：無線通訊基礎與頻譜、天線特性</span>
                         <span class="unit-desc text-xs text-slate-500 transition-colors duration-300">基礎觀念與頻段天線 (35題)</span>
                     </div>
                 </label>
                 <label class="unit-label flex items-center gap-3 p-4 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer transition">
-                    <input type="checkbox" name="unit-select" value="unit2" checked onchange="updateSliderRange()" class="w-5 h-5 text-indigo-600 rounded focus:ring-indigo-500">
+                    <input type="checkbox" name="unit-select" value="unit2" checked onchange="updateSliderRange()" tabindex="-1" class="w-5 h-5 text-indigo-600 rounded focus:ring-indigo-500">
                     <div>
                         <span class="unit-title font-bold text-slate-800 block transition-colors duration-300">單元二：通道特性、dB 運算與訊號衰減</span>
                         <span class="unit-desc text-xs text-slate-500 transition-colors duration-300">穿透損失、RSSI、dBm 與衰減計算 (35題)</span>
                     </div>
                 </label>
                 <label class="unit-label flex items-center gap-3 p-4 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer transition">
-                    <input type="checkbox" name="unit-select" value="unit3" checked onchange="updateSliderRange()" class="w-5 h-5 text-indigo-600 rounded focus:ring-indigo-500">
+                    <input type="checkbox" name="unit-select" value="unit3" checked onchange="updateSliderRange()" tabindex="-1" class="w-5 h-5 text-indigo-600 rounded focus:ring-indigo-500">
                     <div>
                         <span class="unit-title font-bold text-slate-800 block transition-colors duration-300">單元三：數位調變、編碼、OFDM、QAM 與 OFDMA</span>
                         <span class="unit-desc text-xs text-slate-500 transition-colors duration-300">調變技術、編碼率與 OFDM 原理 (35題)</span>
                     </div>
                 </label>
                 <label class="unit-label flex items-center gap-3 p-4 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer transition">
-                    <input type="checkbox" name="unit-select" value="unit4" checked onchange="updateSliderRange()" class="w-5 h-5 text-indigo-600 rounded focus:ring-indigo-500">
+                    <input type="checkbox" name="unit-select" value="unit4" checked onchange="updateSliderRange()" tabindex="-1" class="w-5 h-5 text-indigo-600 rounded focus:ring-indigo-500">
                     <div>
                         <span class="unit-title font-bold text-slate-800 block transition-colors duration-300">單元四：天線特性、空間分集、MIMO 與涵蓋範圍</span>
                         <span class="unit-desc text-xs text-slate-500 transition-colors duration-300">天線增益、EIRP、空間串流、波束成形與覆蓋範圍 (35題)</span>
@@ -68,7 +68,7 @@
                     <label for="question-count-slider" class="card-title font-semibold text-slate-700 text-sm transition-colors duration-300">每次測驗出題數：</label>
                     <span id="slider-value-display" class="text-indigo-600 font-bold text-lg">20 題</span>
                 </div>
-                <input type="range" id="question-count-slider" min="1" max="140" value="20" 
+                <input type="range" id="question-count-slider" min="1" max="140" value="20" tabindex="-1"
                        class="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-indigo-600"
                        oninput="updateSliderDisplay()">
                 <div class="flex justify-between text-xs text-slate-400">
@@ -79,10 +79,10 @@
 
             <!-- 操作按鈕 -->
             <div class="flex flex-col sm:flex-row justify-center gap-4 pt-2">
-                <button onclick="startQuiz(false)" class="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold px-8 py-3 rounded-xl shadow-lg transition duration-200 cursor-pointer">
+                <button onclick="startQuiz(false)" tabindex="-1" class="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold px-8 py-3 rounded-xl shadow-lg transition duration-200 cursor-pointer">
                     開始新測驗
                 </button>
-                <button id="resume-btn" onclick="resumeQuiz()" class="hidden bg-emerald-600 hover:bg-emerald-700 text-white font-semibold px-8 py-3 rounded-xl shadow-lg transition duration-200 cursor-pointer">
+                <button id="resume-btn" onclick="resumeQuiz()" tabindex="-1" class="hidden bg-emerald-600 hover:bg-emerald-700 text-white font-semibold px-8 py-3 rounded-xl shadow-lg transition duration-200 cursor-pointer">
                     繼續上次未完成測驗
                 </button>
             </div>
@@ -94,7 +94,7 @@
             <div id="quiz-header-box" class="bg-indigo-50/95 backdrop-blur rounded-xl shadow-sm border border-indigo-100 sticky top-4 z-10 overflow-hidden transition-colors duration-300">
                 <div class="flex justify-between items-center px-6 py-4">
                     <div class="flex items-center gap-4">
-                        <button onclick="pauseQuiz()" id="pause-btn" class="bg-white hover:bg-indigo-100 text-indigo-700 text-xs font-semibold px-3 py-2 rounded-lg transition cursor-pointer border border-indigo-200 shadow-sm">
+                        <button onclick="pauseQuiz()" id="pause-btn" tabindex="-1" class="bg-white hover:bg-indigo-100 text-indigo-700 text-xs font-semibold px-3 py-2 rounded-lg transition cursor-pointer border border-indigo-200 shadow-sm">
                             暫存進度並返回
                         </button>
                         <span id="quiz-progress-label" class="font-semibold text-indigo-900 transition-colors duration-300">作答進度</span>
@@ -112,7 +112,7 @@
             </div>
 
             <div class="text-center pt-4 pb-12">
-                <button onclick="submitQuiz()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-10 py-4 rounded-xl shadow-lg transition duration-200 text-lg cursor-pointer">
+                <button onclick="submitQuiz()" tabindex="-1" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-10 py-4 rounded-xl shadow-lg transition duration-200 text-lg cursor-pointer">
                     交卷看成績
                 </button>
             </div>
@@ -132,10 +132,10 @@
                 </div>
             </div>
             <div class="flex justify-center gap-4 flex-wrap">
-                <button onclick="resetToStart()" class="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold px-6 py-3 rounded-xl transition duration-200 cursor-pointer">
+                <button onclick="resetToStart()" tabindex="-1" class="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold px-6 py-3 rounded-xl transition duration-200 cursor-pointer">
                     返回單元選擇
                 </button>
-                <button onclick="reviewAnswers()" id="review-btn" class="bg-slate-200 hover:bg-slate-300 text-slate-700 font-semibold px-6 py-3 rounded-xl transition duration-200 cursor-pointer">
+                <button onclick="reviewAnswers()" id="review-btn" tabindex="-1" class="bg-slate-200 hover:bg-slate-300 text-slate-700 font-semibold px-6 py-3 rounded-xl transition duration-200 cursor-pointer">
                     檢視詳細解析
                 </button>
             </div>
@@ -148,7 +148,7 @@
                 <!-- 動態插入解析 -->
             </div>
             <div class="text-center pb-12">
-                <button onclick="resetToStart()" class="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold px-8 py-3 rounded-xl shadow-lg transition duration-200 cursor-pointer">
+                <button onclick="resetToStart()" tabindex="-1" class="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold px-8 py-3 rounded-xl shadow-lg transition duration-200 cursor-pointer">
                     返回首頁
                 </button>
             </div>
@@ -162,6 +162,13 @@
     <script src="unit4.js"></script>
 
     <script>
+        // 全域攔截 Tab 鍵，確保任何東西都無法透過 Tab 聚焦
+        window.addEventListener('keydown', function(e) {
+            if (e.key === 'Tab') {
+                e.preventDefault();
+            }
+        });
+
         const unitsData = {
             unit1: typeof unit1Data !== 'undefined' ? unit1Data : [],
             unit2: typeof unit2Data !== 'undefined' ? unit2Data : [],
@@ -245,7 +252,7 @@
                 quizHeaderBox.style.borderColor = '#333538';
                 pauseBtn.className = "bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold px-3 py-2 rounded-lg transition cursor-pointer border border-slate-700 shadow-sm";
                 quizProgressLabel.style.color = '#f1f3f4';
-                progressIndicator.className = "text-indigo-400 font-bold"; // 改成與主標題一致的顏色
+                progressIndicator.className = "text-indigo-400 font-bold";
                 progressTrack.style.backgroundColor = '#333538';
 
                 scoreBox1.style.backgroundColor = '#282a2d';
@@ -422,8 +429,7 @@
                 answers: userAnswers
             };
             localStorage.setItem('wireless_quiz_saved', JSON.stringify(state));
-            alert("進度已暫存！您可以隨時回來繼續。");
-            resetToStart();
+            resetToStart(); // 直接執行動作，不跳出 alert 對話框
         }
 
         function resetToStart() {
@@ -435,20 +441,44 @@
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
+        // 渲染題目選項（無圓圈、支援點擊選中/取消、自動放大縮小對比）
         function renderQuestions() {
             const container = document.getElementById('questions-container');
             container.innerHTML = '';
 
             currentQuizQuestions.forEach((item, qIndex) => {
                 let optionsHtml = '';
+                const hasAnswered = userAnswers[qIndex] !== undefined;
+
                 item.options.forEach((opt, oIndex) => {
-                    const isChecked = userAnswers[qIndex] === oIndex ? 'checked' : '';
-                    const labelBg = isDarkMode ? 'border-slate-700 hover:bg-[#282a2d] text-slate-200' : 'border-slate-200 hover:bg-slate-50 text-slate-700';
+                    const isSelected = userAnswers[qIndex] === oIndex;
+                    
+                    let cardStyle = "";
+                    let scaleStyle = "scale-100";
+
+                    if (hasAnswered) {
+                        if (isSelected) {
+                            scaleStyle = "scale-[1.02] font-semibold";
+                            cardStyle = isDarkMode 
+                                ? "border-indigo-500 bg-indigo-950/50 text-indigo-200 shadow-md" 
+                                : "border-indigo-500 bg-indigo-50/90 text-indigo-950 shadow-sm";
+                        } else {
+                            scaleStyle = "scale-[0.98] opacity-75";
+                            cardStyle = isDarkMode 
+                                ? "border-slate-700 bg-[#282a2d] text-slate-400" 
+                                : "border-slate-200 bg-white text-slate-500";
+                        }
+                    } else {
+                        cardStyle = isDarkMode 
+                            ? "border-slate-700 bg-[#282a2d] text-slate-200 hover:bg-[#323539]" 
+                            : "border-slate-200 bg-white text-slate-700 hover:bg-slate-50";
+                    }
+
                     optionsHtml += `
-                        <label class="flex items-start gap-3 p-3 rounded-lg border ${labelBg} cursor-pointer transition">
-                            <input type="radio" name="question-${qIndex}" value="${oIndex}" ${isChecked} onchange="recordAnswer(${qIndex}, ${oIndex})" class="mt-1 text-indigo-600 focus:ring-indigo-500">
+                        <div onclick="toggleOption(${qIndex}, ${oIndex})" tabindex="-1"
+                             class="flex items-center gap-3 p-3.5 rounded-xl border ${cardStyle} ${scaleStyle} cursor-pointer transition-all duration-200 select-none">
                             <span class="text-sm md:text-base">${String.fromCharCode(65 + oIndex)}. ${opt}</span>
-                        </label>
+                        </div>
                     `;
                 });
 
@@ -456,7 +486,7 @@
                 container.innerHTML += `
                     <div class="${qCardBg} rounded-2xl shadow-sm border p-6 space-y-4 transition-colors duration-300">
                         <h3 class="font-bold text-base md:text-lg">第 ${qIndex + 1} 題：${item.q}</h3>
-                        <div class="space-y-2">
+                        <div class="space-y-2.5">
                             ${optionsHtml}
                         </div>
                     </div>
@@ -464,8 +494,14 @@
             });
         }
 
-        function recordAnswer(qIndex, oIndex) {
-            userAnswers[qIndex] = oIndex;
+        // 點擊選項邏輯：若已選中則取消，若未選中則選中
+        function toggleOption(qIndex, oIndex) {
+            if (userAnswers[qIndex] === oIndex) {
+                delete userAnswers[qIndex];
+            } else {
+                userAnswers[qIndex] = oIndex;
+            }
+            renderQuestions();
             updateProgressUI();
         }
 
