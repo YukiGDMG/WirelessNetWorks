@@ -7,58 +7,65 @@
     <!-- 引入 Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-slate-50 text-slate-800 min-h-screen py-8 px-4">
+<body id="body-root" class="bg-slate-50 text-slate-800 min-h-screen py-8 px-4 transition-colors duration-300">
 
     <div class="max-w-3xl mx-auto">
+        <!-- 頂部功能列（含 Gemini 風格深色模式切換按鈕） -->
+        <div class="flex justify-end mb-4">
+            <button onclick="toggleGeminiDarkMode()" id="dark-mode-btn" class="flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold bg-white text-slate-700 border border-slate-200 shadow-sm hover:bg-slate-100 transition cursor-pointer">
+                <span id="theme-icon">🌙</span> <span id="theme-text">切換深色模式</span>
+            </button>
+        </div>
+
         <!-- 標題區 -->
         <header class="text-center mb-8">
-            <h1 class="text-3xl font-bold text-indigo-600 mb-2">無線通訊原理 - 綜合練習系統</h1>
-            <p class="text-slate-600">多檔案模組化架構：支援單元選擇、出題數拉桿、選項隨機排序與動畫進度條。</p>
+            <h1 id="main-title" class="text-3xl font-bold text-indigo-600 mb-2 transition-colors duration-300">無線通訊原理 - 綜合練習系統</h1>
+            <p id="main-subtitle" class="text-slate-600 transition-colors duration-300">聽話！讓我看看！</p>
         </header>
 
         <!-- 開始畫面 / 單元選擇 -->
-        <div id="start-screen" class="bg-white rounded-2xl shadow-sm border border-slate-200 p-8 space-y-6">
+        <div id="start-screen" class="card-bg bg-white rounded-2xl shadow-sm border border-slate-200 p-8 space-y-6 transition-colors duration-300">
             <div class="text-center">
-                <h2 class="text-xl font-bold text-slate-700 mb-2">請選擇您要練習的單元與出題數</h2>
-                <p class="text-slate-500 text-sm">可單選或複選進行混合測驗</p>
+                <h2 class="card-title text-xl font-bold text-slate-700 mb-2 transition-colors duration-300">請選擇您要練習的單元與出題數</h2>
+                <p class="card-sub text-slate-500 text-sm transition-colors duration-300">可單選或複選進行混合測驗</p>
             </div>
 
             <!-- 單元勾選清單 -->
             <div class="space-y-3 max-w-lg mx-auto">
-                <label class="flex items-center gap-3 p-4 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer transition">
+                <label class="unit-label flex items-center gap-3 p-4 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer transition">
                     <input type="checkbox" name="unit-select" value="unit1" checked onchange="updateSliderRange()" class="w-5 h-5 text-indigo-600 rounded focus:ring-indigo-500">
                     <div>
-                        <span class="font-bold text-slate-800 block">單元一：無線通訊基礎與頻譜、天線特性</span>
-                        <span class="text-xs text-slate-500">基礎觀念與頻段天線 (35題)</span>
+                        <span class="unit-title font-bold text-slate-800 block transition-colors duration-300">單元一：無線通訊基礎與頻譜、天線特性</span>
+                        <span class="unit-desc text-xs text-slate-500 transition-colors duration-300">基礎觀念與頻段天線 (35題)</span>
                     </div>
                 </label>
-                <label class="flex items-center gap-3 p-4 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer transition">
+                <label class="unit-label flex items-center gap-3 p-4 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer transition">
                     <input type="checkbox" name="unit-select" value="unit2" checked onchange="updateSliderRange()" class="w-5 h-5 text-indigo-600 rounded focus:ring-indigo-500">
                     <div>
-                        <span class="font-bold text-slate-800 block">單元二：通道特性、dB 運算與訊號衰減</span>
-                        <span class="text-xs text-slate-500">穿透損失、RSSI、dBm 與衰減計算 (35題)</span>
+                        <span class="unit-title font-bold text-slate-800 block transition-colors duration-300">單元二：通道特性、dB 運算與訊號衰減</span>
+                        <span class="unit-desc text-xs text-slate-500 transition-colors duration-300">穿透損失、RSSI、dBm 與衰減計算 (35題)</span>
                     </div>
                 </label>
-                <label class="flex items-center gap-3 p-4 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer transition">
+                <label class="unit-label flex items-center gap-3 p-4 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer transition">
                     <input type="checkbox" name="unit-select" value="unit3" checked onchange="updateSliderRange()" class="w-5 h-5 text-indigo-600 rounded focus:ring-indigo-500">
                     <div>
-                        <span class="font-bold text-slate-800 block">單元三：數位調變、編碼、OFDM、QAM 與 OFDMA</span>
-                        <span class="text-xs text-slate-500">調變技術、編碼率與 OFDM 原理 (35題)</span>
+                        <span class="unit-title font-bold text-slate-800 block transition-colors duration-300">單元三：數位調變、編碼、OFDM、QAM 與 OFDMA</span>
+                        <span class="unit-desc text-xs text-slate-500 transition-colors duration-300">調變技術、編碼率與 OFDM 原理 (35題)</span>
                     </div>
                 </label>
-                <label class="flex items-center gap-3 p-4 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer transition">
+                <label class="unit-label flex items-center gap-3 p-4 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer transition">
                     <input type="checkbox" name="unit-select" value="unit4" checked onchange="updateSliderRange()" class="w-5 h-5 text-indigo-600 rounded focus:ring-indigo-500">
                     <div>
-                        <span class="font-bold text-slate-800 block">單元四：天線特性、空間分集、MIMO 與涵蓋範圍</span>
-                        <span class="text-xs text-slate-500">天線增益、EIRP、空間串流、波束成形與覆蓋範圍 (35題)</span>
+                        <span class="unit-title font-bold text-slate-800 block transition-colors duration-300">單元四：天線特性、空間分集、MIMO 與涵蓋範圍</span>
+                        <span class="unit-desc text-xs text-slate-500 transition-colors duration-300">天線增益、EIRP、空間串流、波束成形與覆蓋範圍 (35題)</span>
                     </div>
                 </label>
             </div>
 
             <!-- 題數選擇拉桿 -->
-            <div class="max-w-lg mx-auto pt-2 space-y-2 bg-slate-50 p-5 rounded-xl border border-slate-200">
+            <div id="slider-box" class="max-w-lg mx-auto pt-2 space-y-2 bg-slate-50 p-5 rounded-xl border border-slate-200 transition-colors duration-300">
                 <div class="flex justify-between items-center">
-                    <label for="question-count-slider" class="font-semibold text-slate-700 text-sm">每次測驗出題數：</label>
+                    <label for="question-count-slider" class="card-title font-semibold text-slate-700 text-sm transition-colors duration-300">每次測驗出題數：</label>
                     <span id="slider-value-display" class="text-indigo-600 font-bold text-lg">20 題</span>
                 </div>
                 <input type="range" id="question-count-slider" min="1" max="140" value="20" 
@@ -83,18 +90,19 @@
 
         <!-- 測驗作答畫面 -->
         <div id="quiz-screen" class="hidden space-y-6">
-            <div class="bg-white rounded-xl shadow-sm border border-slate-200 sticky top-4 z-10 overflow-hidden">
+            <!-- 作答進度導覽列 -->
+            <div id="quiz-header-box" class="bg-indigo-50/95 backdrop-blur rounded-xl shadow-sm border border-indigo-100 sticky top-4 z-10 overflow-hidden transition-colors duration-300">
                 <div class="flex justify-between items-center px-6 py-4">
                     <div class="flex items-center gap-4">
-                        <button onclick="pauseQuiz()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold px-3 py-2 rounded-lg transition cursor-pointer">
+                        <button onclick="pauseQuiz()" id="pause-btn" class="bg-white hover:bg-indigo-100 text-indigo-700 text-xs font-semibold px-3 py-2 rounded-lg transition cursor-pointer border border-indigo-200 shadow-sm">
                             暫存進度並返回
                         </button>
-                        <span class="font-semibold text-slate-700">作答進度</span>
+                        <span id="quiz-progress-label" class="font-semibold text-indigo-900 transition-colors duration-300">作答進度</span>
                     </div>
                     <span id="progress-indicator" class="text-indigo-600 font-bold">1 / 20</span>
                 </div>
                 <!-- 動畫進度條 -->
-                <div class="w-full bg-slate-100 h-2">
+                <div id="progress-track" class="w-full bg-indigo-200/60 h-2 transition-colors duration-300">
                     <div id="progress-bar" class="bg-indigo-600 h-2 transition-all duration-300 ease-out" style="width: 0%;"></div>
                 </div>
             </div>
@@ -111,15 +119,15 @@
         </div>
 
         <!-- 結果結算畫面 -->
-        <div id="result-screen" class="hidden bg-white rounded-2xl shadow-sm border border-slate-200 p-8 text-center space-y-6">
-            <h2 class="text-2xl font-bold text-slate-800">測驗結果</h2>
+        <div id="result-screen" class="hidden card-bg bg-white rounded-2xl shadow-sm border border-slate-200 p-8 text-center space-y-6 transition-colors duration-300">
+            <h2 class="card-title text-2xl font-bold text-slate-800 transition-colors duration-300">測驗結果</h2>
             <div class="flex justify-center items-center gap-8 my-6">
-                <div class="bg-indigo-50 p-6 rounded-2xl border border-indigo-100 min-w-[140px]">
-                    <p class="text-sm text-slate-500 mb-1">答對題數</p>
+                <div id="score-box-1" class="bg-indigo-50 p-6 rounded-2xl border border-indigo-100 min-w-[140px] transition-colors duration-300">
+                    <p class="card-sub text-sm text-slate-500 mb-1 transition-colors duration-300">答對題數</p>
                     <p id="score-text" class="text-4xl font-black text-indigo-600">0 / 20</p>
                 </div>
-                <div class="bg-emerald-50 p-6 rounded-2xl border border-emerald-100 min-w-[140px]">
-                    <p class="text-sm text-slate-500 mb-1">正確百分比</p>
+                <div id="score-box-2" class="bg-emerald-50 p-6 rounded-2xl border border-emerald-100 min-w-[140px] transition-colors duration-300">
+                    <p class="card-sub text-sm text-slate-500 mb-1 transition-colors duration-300">正確百分比</p>
                     <p id="percentage-text" class="text-4xl font-black text-emerald-600">0%</p>
                 </div>
             </div>
@@ -127,7 +135,7 @@
                 <button onclick="resetToStart()" class="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold px-6 py-3 rounded-xl transition duration-200 cursor-pointer">
                     返回單元選擇
                 </button>
-                <button onclick="reviewAnswers()" class="bg-slate-200 hover:bg-slate-300 text-slate-700 font-semibold px-6 py-3 rounded-xl transition duration-200 cursor-pointer">
+                <button onclick="reviewAnswers()" id="review-btn" class="bg-slate-200 hover:bg-slate-300 text-slate-700 font-semibold px-6 py-3 rounded-xl transition duration-200 cursor-pointer">
                     檢視詳細解析
                 </button>
             </div>
@@ -135,7 +143,7 @@
 
         <!-- 詳檢畫面 -->
         <div id="review-screen" class="hidden space-y-6 mt-8">
-            <h3 class="text-xl font-bold text-slate-800 px-2">詳細解答與對錯檢視</h3>
+            <h3 class="card-title text-xl font-bold text-slate-800 px-2 transition-colors duration-300">詳細解答與對錯檢視</h3>
             <div id="review-container" class="space-y-6">
                 <!-- 動態插入解析 -->
             </div>
@@ -163,11 +171,130 @@
 
         let currentQuizQuestions = [];
         let userAnswers = {};
+        let isDarkMode = false;
 
         window.onload = function() {
+            const savedTheme = localStorage.getItem('gemini_dark_mode');
+            if (savedTheme === 'true') {
+                isDarkMode = true;
+                applyGeminiTheme();
+            }
             checkSavedProgress();
-            updateSliderRange(); // 初始化拉桿數值與上下限
+            updateSliderRange();
         };
+
+        function toggleGeminiDarkMode() {
+            isDarkMode = !isDarkMode;
+            localStorage.setItem('gemini_dark_mode', isDarkMode);
+            applyGeminiTheme();
+            if (!document.getElementById('quiz-screen').classList.contains('hidden') || 
+                !document.getElementById('review-screen').classList.contains('hidden')) {
+                if (!document.getElementById('quiz-screen').classList.contains('hidden')) {
+                    renderQuestions();
+                } else {
+                    reviewAnswers();
+                }
+            }
+        }
+
+        function applyGeminiTheme() {
+            const bodyRoot = document.getElementById('body-root');
+            const mainTitle = document.getElementById('main-title');
+            const mainSubtitle = document.getElementById('main-subtitle');
+            const darkModeBtn = document.getElementById('dark-mode-btn');
+            const themeIcon = document.getElementById('theme-icon');
+            const themeText = document.getElementById('theme-text');
+            const sliderBox = document.getElementById('slider-box');
+            const quizHeaderBox = document.getElementById('quiz-header-box');
+            const pauseBtn = document.getElementById('pause-btn');
+            const quizProgressLabel = document.getElementById('quiz-progress-label');
+            const progressIndicator = document.getElementById('progress-indicator');
+            const progressTrack = document.getElementById('progress-track');
+            const scoreBox1 = document.getElementById('score-box-1');
+            const scoreBox2 = document.getElementById('score-box-2');
+            const reviewBtn = document.getElementById('review-btn');
+
+            if (isDarkMode) {
+                bodyRoot.style.backgroundColor = '#131314';
+                bodyRoot.style.color = '#e3e3e8';
+                mainTitle.className = "text-3xl font-bold text-indigo-400 mb-2 transition-colors duration-300";
+                mainSubtitle.className = "text-slate-400 transition-colors duration-300";
+
+                darkModeBtn.className = "flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold bg-[#1e1f20] text-slate-200 border border-slate-700 shadow-sm hover:bg-slate-800 transition cursor-pointer";
+                themeIcon.innerText = "☀️";
+                themeText.innerText = "淺色模式";
+
+                document.querySelectorAll('.card-bg').forEach(el => {
+                    el.style.backgroundColor = '#1e1f20';
+                    el.style.borderColor = '#333538';
+                });
+                document.querySelectorAll('.card-title').forEach(el => { el.style.color = '#f1f3f4'; });
+                document.querySelectorAll('.card-sub').forEach(el => { el.style.color = '#9aa0a6'; });
+                document.querySelectorAll('.unit-label').forEach(el => {
+                    el.style.borderColor = '#333538';
+                    el.onmouseover = () => el.style.backgroundColor = '#282a2d';
+                    el.onmouseout = () => el.style.backgroundColor = 'transparent';
+                });
+                document.querySelectorAll('.unit-title').forEach(el => { el.style.color = '#f1f3f4'; });
+                document.querySelectorAll('.unit-desc').forEach(el => { el.style.color = '#9aa0a6'; });
+
+                sliderBox.style.backgroundColor = '#282a2d';
+                sliderBox.style.borderColor = '#333538';
+
+                quizHeaderBox.style.backgroundColor = '#1e1f20';
+                quizHeaderBox.style.borderColor = '#333538';
+                pauseBtn.className = "bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold px-3 py-2 rounded-lg transition cursor-pointer border border-slate-700 shadow-sm";
+                quizProgressLabel.style.color = '#f1f3f4';
+                progressIndicator.className = "text-indigo-400 font-bold"; // 改成與主標題一致的顏色
+                progressTrack.style.backgroundColor = '#333538';
+
+                scoreBox1.style.backgroundColor = '#282a2d';
+                scoreBox1.style.borderColor = '#333538';
+                scoreBox2.style.backgroundColor = '#282a2d';
+                scoreBox2.style.borderColor = '#333538';
+                reviewBtn.className = "bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold px-6 py-3 rounded-xl transition duration-200 cursor-pointer border border-slate-700";
+
+            } else {
+                bodyRoot.style.backgroundColor = '#f8fafc';
+                bodyRoot.style.color = '#1e293b';
+                mainTitle.className = "text-3xl font-bold text-indigo-600 mb-2 transition-colors duration-300";
+                mainSubtitle.className = "text-slate-600 transition-colors duration-300";
+
+                darkModeBtn.className = "flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold bg-white text-slate-700 border border-slate-200 shadow-sm hover:bg-slate-100 transition cursor-pointer";
+                themeIcon.innerText = "🌙";
+                themeText.innerText = "深色模式";
+
+                document.querySelectorAll('.card-bg').forEach(el => {
+                    el.style.backgroundColor = '#ffffff';
+                    el.style.borderColor = '#e2e8f0';
+                });
+                document.querySelectorAll('.card-title').forEach(el => { el.style.color = '#334155'; });
+                document.querySelectorAll('.card-sub').forEach(el => { el.style.color = '#64748b'; });
+                document.querySelectorAll('.unit-label').forEach(el => {
+                    el.style.borderColor = '#e2e8f0';
+                    el.onmouseover = () => el.style.backgroundColor = '#f8fafc';
+                    el.onmouseout = () => el.style.backgroundColor = 'transparent';
+                });
+                document.querySelectorAll('.unit-title').forEach(el => { el.style.color = '#1e293b'; });
+                document.querySelectorAll('.unit-desc').forEach(el => { el.style.color = '#64748b'; });
+
+                sliderBox.style.backgroundColor = '#f8fafc';
+                sliderBox.style.borderColor = '#e2e8f0';
+
+                quizHeaderBox.style.backgroundColor = 'rgba(238, 242, 255, 0.95)';
+                quizHeaderBox.style.borderColor = '#e0e7ff';
+                pauseBtn.className = "bg-white hover:bg-indigo-100 text-indigo-700 text-xs font-semibold px-3 py-2 rounded-lg transition cursor-pointer border border-indigo-200 shadow-sm";
+                quizProgressLabel.style.color = '#312e81';
+                progressIndicator.className = "text-indigo-600 font-bold";
+                progressTrack.style.backgroundColor = 'rgba(199, 210, 254, 0.6)';
+
+                scoreBox1.style.backgroundColor = '#eff6ff';
+                scoreBox1.style.borderColor = '#dbeafe';
+                scoreBox2.style.backgroundColor = '#ecfdf5';
+                scoreBox2.style.borderColor = '#d1fae5';
+                reviewBtn.className = "bg-slate-200 hover:bg-slate-300 text-slate-700 font-semibold px-6 py-3 rounded-xl transition duration-200 cursor-pointer";
+            }
+        }
 
         function checkSavedProgress() {
             const saved = localStorage.getItem('wireless_quiz_saved');
@@ -179,7 +306,6 @@
             }
         }
 
-        // 取得目前勾選單元的總題庫池
         function getSelectedPool() {
             const selectedUnits = [];
             document.querySelectorAll('input[name="unit-select"]:checked').forEach(cb => {
@@ -195,7 +321,6 @@
             return pool;
         }
 
-        // 動態更新拉桿範圍
         function updateSliderRange() {
             const pool = getSelectedPool();
             const maxQuestions = pool.length > 0 ? pool.length : 1;
@@ -213,7 +338,6 @@
             updateSliderDisplay();
         }
 
-        // 即時更新拉桿數值顯示
         function updateSliderDisplay() {
             const slider = document.getElementById('question-count-slider');
             const maxVal = parseInt(slider.max, 10);
@@ -252,19 +376,16 @@
                     return;
                 }
 
-                // 隨機打散整題池
                 shuffle(pool);
 
-                // 取得拉桿設定的出題數量
                 const slider = document.getElementById('question-count-slider');
                 const targetCount = parseInt(slider.value, 10);
                 if (pool.length > targetCount) {
-                    pool = pool.slice(0, targetCount); // 截取指定題數
+                    pool = pool.slice(0, targetCount);
                 }
 
                 currentQuizQuestions = JSON.parse(JSON.stringify(pool));
 
-                // 選項順序隨機洗牌
                 currentQuizQuestions.forEach(item => {
                     let optionsWithIndex = item.options.map((opt, idx) => ({ 
                         text: opt, 
@@ -322,17 +443,19 @@
                 let optionsHtml = '';
                 item.options.forEach((opt, oIndex) => {
                     const isChecked = userAnswers[qIndex] === oIndex ? 'checked' : '';
+                    const labelBg = isDarkMode ? 'border-slate-700 hover:bg-[#282a2d] text-slate-200' : 'border-slate-200 hover:bg-slate-50 text-slate-700';
                     optionsHtml += `
-                        <label class="flex items-start gap-3 p-3 rounded-lg border border-slate-200 hover:bg-slate-50 cursor-pointer transition">
+                        <label class="flex items-start gap-3 p-3 rounded-lg border ${labelBg} cursor-pointer transition">
                             <input type="radio" name="question-${qIndex}" value="${oIndex}" ${isChecked} onchange="recordAnswer(${qIndex}, ${oIndex})" class="mt-1 text-indigo-600 focus:ring-indigo-500">
-                            <span class="text-slate-700 text-sm md:text-base">${String.fromCharCode(65 + oIndex)}. ${opt}</span>
+                            <span class="text-sm md:text-base">${String.fromCharCode(65 + oIndex)}. ${opt}</span>
                         </label>
                     `;
                 });
 
+                const qCardBg = isDarkMode ? 'bg-[#1e1f20] border-[#333538] text-slate-100' : 'bg-white border-slate-200 text-slate-800';
                 container.innerHTML += `
-                    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 space-y-4">
-                        <h3 class="font-bold text-slate-800 text-base md:text-lg">第 ${qIndex + 1} 題：${item.q}</h3>
+                    <div class="${qCardBg} rounded-2xl shadow-sm border p-6 space-y-4 transition-colors duration-300">
+                        <h3 class="font-bold text-base md:text-lg">第 ${qIndex + 1} 題：${item.q}</h3>
                         <div class="space-y-2">
                             ${optionsHtml}
                         </div>
@@ -350,10 +473,8 @@
             const total = currentQuizQuestions.length;
             const answeredCount = Object.keys(userAnswers).length;
             
-            // 更新文字進度
             document.getElementById('progress-indicator').innerText = `已作答 ${answeredCount} / ${total}`;
             
-            // 計算百分比並更新動畫進度條
             const percent = total > 0 ? (answeredCount / total) * 100 : 0;
             document.getElementById('progress-bar').style.width = `${percent}%`;
         }
@@ -394,11 +515,11 @@
 
                 let optionsHtml = '';
                 item.options.forEach((opt, oIndex) => {
-                    let style = "border-slate-200 text-slate-700 bg-white";
+                    let style = isDarkMode ? "border-slate-700 text-slate-300 bg-[#282a2d]" : "border-slate-200 text-slate-700 bg-white";
                     if (oIndex === item.answer) {
-                        style = "border-emerald-500 bg-emerald-50 text-emerald-900 font-medium";
+                        style = isDarkMode ? "border-emerald-600 bg-emerald-950/40 text-emerald-300 font-medium" : "border-emerald-500 bg-emerald-50 text-emerald-900 font-medium";
                     } else if (oIndex === userChoice && !isCorrect) {
-                        style = "border-rose-500 bg-rose-50 text-rose-900 line-through";
+                        style = isDarkMode ? "border-rose-600 bg-rose-950/40 text-rose-300 line-through" : "border-rose-500 bg-rose-50 text-rose-900 line-through";
                     }
 
                     optionsHtml += `
@@ -408,17 +529,20 @@
                     `;
                 });
 
+                const rCardBg = isDarkMode ? 'bg-[#1e1f20] border-[#333538] text-slate-100' : 'bg-white border-slate-200 text-slate-800';
+                const explBg = isDarkMode ? 'bg-[#282a2d] border-[#333538] text-slate-300' : 'bg-slate-50 border-slate-100 text-slate-600';
+
                 reviewContainer.innerHTML += `
-                    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 space-y-4">
+                    <div class="${rCardBg} rounded-2xl shadow-sm border p-6 space-y-4 transition-colors duration-300">
                         <div class="flex justify-between items-start">
-                            <h3 class="font-bold text-slate-800 text-base">第 ${qIndex + 1} 題：${item.q}</h3>
+                            <h3 class="font-bold text-base">第 ${qIndex + 1} 題：${item.q}</h3>
                             ${statusBadge}
                         </div>
                         <div class="space-y-2">
                             ${optionsHtml}
                         </div>
-                        <div class="bg-slate-50 p-4 rounded-xl text-sm text-slate-600 border border-slate-100 mt-2">
-                            <span class="font-semibold text-slate-700">詳解：</span>${item.explanation}
+                        <div class="${explBg} p-4 rounded-xl text-sm border mt-2">
+                            <span class="font-semibold">詳解：</span>${item.explanation}
                         </div>
                     </div>
                 `;
